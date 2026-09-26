@@ -1,0 +1,47 @@
+name: Publish Android Release
+
+# Manual only. Draft is the default; use a real release only after QA and signing setup.
+on:
+  workflow_dispatch:
+    inputs:
+      draft:
+        description: Create the GitHub Release as a draft?
+        required: false
+        type: boolean
+        default: true
+      prerelease:
+        description: Mark this as a prerelease?
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    # Call the build workflow directly so it can generate this repo's missing Android runner.
+    uses: Keshab1997/flutter-builder/.github/workflows/flutter-build.yml@v1.7.0
+    with:
+      flutter-channel: stable
+      working-directory: "."
+      generate-android-platform: true
+      android-organization: com.keshabstudios
+      run-format-check: false
+      run-analyze: true
+      run-tests: true
+      build-apk: true
+      build-aab: true
+      publish-github-release: true
+      release-name: "ClassBondhu: Student Planner"
+      release-draft: ${{ inputs.draft }}
+      release-prerelease: ${{ inputs.prerelease }}
+      preflight: true
+      fail-on-placeholders: true
+      check-version-bump: true
+      verify-signing: true
+    secrets:
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+      KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+      KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}

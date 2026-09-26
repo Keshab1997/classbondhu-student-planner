@@ -1,0 +1,30 @@
+name: Flutter CI
+
+# Runs validation only; it does not build Android artifacts or publish releases.
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: classbondhu-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    uses: Keshab1997/flutter-builder/.github/workflows/flutter-build.yml@v1.7.0
+    with:
+      flutter-channel: stable
+      working-directory: "."
+      # Turn on after running `dart format .` once the Flutter SDK is available.
+      run-format-check: false
+      run-analyze: true
+      run-tests: true
+      code-coverage: true
+      build-apk: false
+      build-aab: false

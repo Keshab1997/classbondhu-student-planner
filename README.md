@@ -42,6 +42,7 @@ Read and implement these in order; later docs depend on earlier product decision
 12. [`docs/11-play-store-release.md`](docs/11-play-store-release.md)
 13. [`docs/12-implementation-roadmap.md`](docs/12-implementation-roadmap.md)
 14. [`docs/13-decisions-and-open-questions.md`](docs/13-decisions-and-open-questions.md)
+15. [`docs/14-github-actions.md`](docs/14-github-actions.md)
 
 ## Current project status
 
@@ -64,6 +65,10 @@ flutter run
 ```
 
 The interface copy currently uses an in-code Bengali/English/Hindi table; ARB code generation can be adopted in the localization milestone.
+
+## GitHub Actions
+
+The project has four Flutter Builder workflows pinned to `Keshab1997/flutter-builder@v1.7.0`: CI on push/PR, manual APK/AAB build, manual draft-first GitHub Release, and tag-triggered AAB build. **Only CI runs on the normal push that adds these files.** Release workflows are manual/tag-triggered and need Android signing secrets before use. See [`docs/14-github-actions.md`](docs/14-github-actions.md).
 
 ## Contributing / working rule
 
