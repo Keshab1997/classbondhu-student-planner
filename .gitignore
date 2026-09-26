@@ -1,0 +1,26 @@
+# Flutter / Dart outputs
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+build/
+coverage/
+
+# Local IDE files
+.idea/
+.vscode/
+*.iml
+
+# Secrets and signing material
+.env
+.env.*
+!.env.example
+*.jks
+*.keystore
+key.properties
+secrets/
+
+# OS noise
+.DS_Store
+Thumbs.db
