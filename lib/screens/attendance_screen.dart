@@ -65,7 +65,16 @@ class AttendanceScreen extends StatelessWidget {
                 Row(children: [
                   Container(width: 42, height: 42, decoration: BoxDecoration(color: Color(subject.color).withOpacity(.12), borderRadius: BorderRadius.circular(14)), child: Icon(Icons.menu_book_rounded, color: Color(subject.color), size: 20)),
                   const SizedBox(width: 12),
-                  Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(subject.name, style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.ink, fontSize: 15)), const SizedBox(height: 3), Text('${subject.attended}/${subject.conducted} ${tr(language, 'classes_attended')}', style: const TextStyle(color: AppColors.muted, fontSize: 12))]),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(subject.name, style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.ink, fontSize: 15)),
+                        const SizedBox(height: 3),
+                        Text('${subject.attended}/${subject.conducted} ${tr(language, 'classes_attended')}', style: const TextStyle(color: AppColors.muted, fontSize: 12)),
+                      ],
+                    ),
+                  ),
                   Text('${(percent * 100).round()}%', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 20, color: AppColors.ink)),
                 ]),
                 const SizedBox(height: 15),
