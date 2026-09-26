@@ -2,8 +2,9 @@
 
 A Flutter student companion for **class routines, subject-wise attendance, assignments, quizzes, and exams**. The first release is designed for college/university students, works offline, and supports **বাংলা (Bengali), English, and हिन्दी (Hindi)**.
 
-> **Working Play Store title:** `ClassBondhu: Student Planner`  
-> **GitHub repository:** [Keshab1997/classbondhu-student-planner](https://github.com/Keshab1997/classbondhu-student-planner)  
+> **Play Store title:** `ClassBondhu: Student Planner`
+> **Android application ID:** `com.keshabstudios.classbondhu`
+> **GitHub repository:** [Keshab1997/classbondhu-student-planner](https://github.com/Keshab1997/classbondhu-student-planner)
 > The title is a working brand, not a trademark or Play Store availability guarantee. Check Play Console and trademark/domain availability before publishing.
 
 ## Product in one sentence
@@ -42,7 +43,7 @@ Read and implement these in order; later docs depend on earlier product decision
 
 ## Current project status
 
-**Planning/documentation phase.** This repository intentionally starts with product and engineering specifications; Flutter source code is not included yet. The roadmap is the implementation order. Decisions still needed before production include the final package ID, supported Android minimum, exact target audience/age policy, and real AdMob account IDs.
+**Planning/documentation phase.** This repository intentionally starts with product and engineering specifications; Flutter source code is not included yet. The roadmap is the implementation order. Decisions still needed before production include supported Android minimum, exact target audience/age policy, and real AdMob account IDs.
 
 ## Quick start (once Flutter source is added)
 

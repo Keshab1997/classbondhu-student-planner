@@ -3,6 +3,7 @@
 ## Platform and architecture
 
 - Client: Flutter / Dart; Android first.
+- Confirmed Android `applicationId`: `com.keshabstudios.classbondhu`; keep it exactly aligned with Play Console. Treat it as immutable after publishing.
 - Architecture: feature-first folders with presentation, application/state, domain, and data boundaries. Keep attendance calculations in pure Dart domain code with unit tests.
 - State management: choose one approach before coding (recommended: Riverpod, unless the team already has a maintained alternative); do not mix patterns casually.
 - Storage: local SQLite-backed repository for subjects, schedule entries, attendance sessions, and tasks. Use a maintained Flutter plugin and migrations. Preferences (selected locale, defaults) may use a small preferences store.
