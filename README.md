@@ -7,6 +7,8 @@ A Flutter student companion for **class routines, subject-wise attendance, assig
 > **GitHub repository:** [Keshab1997/classbondhu-student-planner](https://github.com/Keshab1997/classbondhu-student-planner)
 > The title is a working brand, not a trademark or Play Store availability guarantee. Check Play Console and trademark/domain availability before publishing.
 
+![Selected light-theme home screen design reference](design/home-reference.png)
+
 ## Product in one sentence
 
 Help a student answer three questions quickly: **What is next today? Am I safe on attendance? What is due soon?**
@@ -43,19 +45,25 @@ Read and implement these in order; later docs depend on earlier product decision
 
 ## Current project status
 
-**Planning/documentation phase.** This repository intentionally starts with product and engineering specifications; Flutter source code is not included yet. The roadmap is the implementation order. Decisions still needed before production include supported Android minimum, exact target audience/age policy, and real AdMob account IDs.
+**UI prototype phase.** Flutter source screens now live under `lib/`; the agreed first light-theme reference is in [`design/`](design/). The prototype includes the Today, Routine, Attendance, subject detail, Tasks, task editor, Settings, language selection, and subject setup screens. Sample state is in memory only: local database persistence, production notifications, AdMob, and generated Android runner scaffolding are not implemented yet. Flutter is not installed in the authoring sandbox, so the code and tests still need to be run on a machine with Flutter.
 
-## Quick start (once Flutter source is added)
+The app uses the confirmed Android application ID `com.keshabstudios.classbondhu`. Keep this exact ID in Play Console and Android build configuration.
 
-The future Flutter app should document its exact Flutter/Dart version and commands here. Expected baseline commands:
+## Run / verify (after Android platform scaffold is generated)
+
+On a machine with Flutter installed, generate the Android runner into a temporary folder so the existing UI source is not overwritten, then copy the runner into this repository:
 
 ```bash
+flutter create --platforms=android --org com.keshabstudios --project-name classbondhu /tmp/classbondhu_scaffold
+cp -R /tmp/classbondhu_scaffold/android ./android
+cp /tmp/classbondhu_scaffold/.metadata ./.metadata
 flutter pub get
-flutter gen-l10n
 flutter analyze
 flutter test
 flutter run
 ```
+
+The interface copy currently uses an in-code Bengali/English/Hindi table; ARB code generation can be adopted in the localization milestone.
 
 ## Contributing / working rule
 

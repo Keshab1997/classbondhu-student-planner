@@ -3,9 +3,10 @@
 Complete in sequence; do not begin production monetization before core behavior and policy decisions are settled.
 
 ## Phase 0 — Product decisions and setup
-- [ ] Confirm audience/age policy, Android minimum, application ID owner, and final name.
-- [ ] Create Flutter project, Git conventions, CI checks, and localization generation.
-- [ ] Add a minimal design system and navigation shell.
+- [x] Confirm working app name and Android application ID (`com.keshabstudios.classbondhu`).
+- [x] Add initial Flutter UI shell and selected light-theme design system; screens currently use in-memory sample state.
+- [ ] Confirm audience/age policy and Android minimum.
+- [ ] Generate Android runner scaffold, add CI checks, and move interface copy to generated localization resources if desired.
 
 ## Phase 1 — Foundations
 - [ ] Configure Bengali/English/Hindi ARB localizations.
