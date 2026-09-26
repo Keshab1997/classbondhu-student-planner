@@ -112,7 +112,7 @@ class _TaskEditorScreenState extends State<TaskEditorScreen> {
         TextField(controller: titleController, onChanged: (_) => setState(() {}), textCapitalization: TextCapitalization.sentences, decoration: InputDecoration(labelText: tr(language, 'title'), hintText: tr(language, 'task_title_hint'))),
         const SizedBox(height: 14),
         DropdownButtonFormField<String>(
-          value: type,
+          initialValue: type,
           decoration: InputDecoration(labelText: tr(language, 'task_type')),
           items: ['Assignment', 'Quiz', 'Exam', 'Other'].map((item) => DropdownMenuItem(value: item, child: Text(_localizedType(language, item)))).toList(),
           onChanged: (value) => setState(() => type = value ?? type),

@@ -24,11 +24,11 @@ void main() {
     final controller = await AppController.open(storage);
     final before = controller.subjects.firstWhere((subject) => subject.id == 'math').attended;
 
-    controller.markAttendance('math', present: true);
+    controller.markAttendance('math', attendanceKey: 'routine-1', present: true);
     await controller.flush();
 
     final reopened = await AppController.open(storage);
     expect(reopened.subjects.firstWhere((subject) => subject.id == 'math').attended, before + 1);
-    expect(reopened.todayAttendance['math'], isTrue);
+    expect(reopened.todayAttendance['routine-1'], isTrue);
   });
 }

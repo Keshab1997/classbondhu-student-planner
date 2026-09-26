@@ -73,6 +73,7 @@ class _RoutineScreenState extends State<RoutineScreen> {
                   title: entry.title,
                   room: entry.room,
                   subjectId: entry.subjectId,
+                  attendanceKey: entry.id,
                   accent: Color(entry.color),
                   showAttendanceAction: false,
                 )),
@@ -110,8 +111,12 @@ class _RoutineScreenState extends State<RoutineScreen> {
           SizedBox(width: double.infinity, child: FilledButton(
             onPressed: () {
               final title = titleController.text.trim().isEmpty ? 'New class' : titleController.text.trim();
-              final matchingSubjects = controller.subjects.where((item) => item.name.toLowerCase() == title.toLowerCase());
-              final subjectId = matchingSubjects.isEmpty ? '' : matchingSubjects.first.id;
+              var matchingSubjects = controller.subjects.where((item) => item.name.toLowerCase() == title.toLowerCase());
+              if (matchingSubjects.isEmpty) {
+                controller.addSubject(title);
+                matchingSubjects = controller.subjects.where((item) => item.name.toLowerCase() == title.toLowerCase());
+              }
+              final subjectId = matchingSubjects.first.id;
               Navigator.pop(sheetContext, RoutineEntryData(
                 id: DateTime.now().microsecondsSinceEpoch.toString(),
                 weekday: selectedDay + 1,
@@ -120,7 +125,7 @@ class _RoutineScreenState extends State<RoutineScreen> {
                 title: title,
                 room: roomController.text.trim().isEmpty ? 'Add location' : roomController.text.trim(),
                 subjectId: subjectId,
-                color: AppColors.brand.value,
+                color: 0xFF5868DB,
               ));
             },
             child: Text(tr(controller.language, 'save')),

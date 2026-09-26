@@ -10,8 +10,8 @@ class ClassCard extends StatelessWidget {
     required this.title,
     required this.room,
     required this.subjectId,
+    required this.attendanceKey,
     required this.accent,
-    this.isDone = false,
     this.showAttendanceAction = true,
     super.key,
   });
@@ -20,15 +20,15 @@ class ClassCard extends StatelessWidget {
   final String title;
   final String room;
   final String subjectId;
+  final String attendanceKey;
   final Color accent;
-  final bool isDone;
   final bool showAttendanceAction;
 
   @override
   Widget build(BuildContext context) {
     final controller = AppScope.of(context);
-    final bool? recordedToday = controller.todayAttendance[subjectId];
-    final marked = isDone || recordedToday != null;
+    final bool? recordedToday = controller.todayAttendance[attendanceKey];
+    final marked = recordedToday != null;
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
@@ -84,13 +84,13 @@ class ClassCard extends StatelessWidget {
             const SizedBox(height: 16),
             Row(children: [
               Expanded(child: FilledButton.icon(
-                onPressed: () { controller.markAttendance(subjectId, present: true); Navigator.pop(sheetContext); },
+                onPressed: () { controller.markAttendance(subjectId, attendanceKey: attendanceKey, present: true); Navigator.pop(sheetContext); },
                 icon: const Icon(Icons.check_rounded), label: Text(tr(controller.language, 'present')),
                 style: FilledButton.styleFrom(backgroundColor: AppColors.mint, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 14)),
               )),
               const SizedBox(width: 12),
               Expanded(child: OutlinedButton.icon(
-                onPressed: () { controller.markAttendance(subjectId, present: false); Navigator.pop(sheetContext); },
+                onPressed: () { controller.markAttendance(subjectId, attendanceKey: attendanceKey, present: false); Navigator.pop(sheetContext); },
                 icon: const Icon(Icons.close_rounded), label: Text(tr(controller.language, 'absent')),
                 style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
               )),

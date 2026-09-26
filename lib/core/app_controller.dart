@@ -255,17 +255,19 @@ class AppController extends ChangeNotifier {
     _changed();
   }
 
-  void markAttendance(String subjectId, {required bool present}) {
+  void markAttendance(String subjectId, {required String attendanceKey, required bool present}) {
     final today = _dateKey(DateTime.now());
     if (attendanceDateKey != today) {
       attendanceDateKey = today;
       todayAttendance.clear();
     }
-    if (todayAttendance.containsKey(subjectId)) return;
-    final subject = subjects.firstWhere((item) => item.id == subjectId);
+    if (todayAttendance.containsKey(attendanceKey)) return;
+    final matches = subjects.where((item) => item.id == subjectId);
+    if (matches.isEmpty) return;
+    final subject = matches.first;
     subject.conducted += 1;
     if (present) subject.attended += 1;
-    todayAttendance[subjectId] = present;
+    todayAttendance[attendanceKey] = present;
     _changed();
   }
 

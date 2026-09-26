@@ -18,6 +18,9 @@ class TodayScreen extends StatelessWidget {
     final totalAttended = controller.subjects.fold<int>(0, (sum, item) => sum + item.attended);
     final ratio = totalConducted == 0 ? 0.0 : totalAttended / totalConducted;
     final percentage = (ratio * 100).round();
+    final todaysClasses = controller.routineEntries.where((entry) => entry.weekday == DateTime.now().weekday).toList()
+      ..sort((a, b) => a.startTime.compareTo(b.startTime));
+    final upcomingTasks = controller.tasks.where((task) => !task.done).toList();
 
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
@@ -51,26 +54,38 @@ class TodayScreen extends StatelessWidget {
         const SizedBox(height: 25),
         SectionHeading(title: tr(language, 'today_classes'), action: tr(language, 'see_all'), onAction: onViewRoutine),
         const SizedBox(height: 8),
-        ClassCard(time: '09:00 – 10:00', title: 'Mathematics', room: 'Room 204', subjectId: 'math', accent: const Color(0xFF6876E8), isDone: true),
-        ClassCard(time: '11:15 – 12:15', title: 'Physics', room: 'Lab 2', subjectId: 'physics', accent: const Color(0xFF39BFA4)),
+        if (todaysClasses.isEmpty)
+          WhitePanel(child: Center(child: Text(tr(language, 'no_classes'), style: const TextStyle(color: AppColors.muted))))
+        else
+          ...todaysClasses.map((entry) => ClassCard(
+                time: entry.time,
+                title: entry.title,
+                room: entry.room,
+                subjectId: entry.subjectId,
+                attendanceKey: entry.id,
+                accent: Color(entry.color),
+              )),
         const SizedBox(height: 7),
         SectionHeading(title: tr(language, 'up_next')),
         const SizedBox(height: 8),
-        WhitePanel(
-          padding: const EdgeInsets.all(16),
-          child: Row(children: [
-            const SoftIcon(Icons.assignment_outlined, color: Color(0xFFD88B3F), background: AppColors.paleAmber),
-            const SizedBox(width: 13),
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(tr(language, 'due_tomorrow').toUpperCase(), style: const TextStyle(fontSize: 10, letterSpacing: .9, color: Color(0xFFD88B3F), fontWeight: FontWeight.w800)),
-              const SizedBox(height: 4),
-              const Text('Physics assignment', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.ink)),
-              const SizedBox(height: 3),
-              const Text('Tomorrow · 10:00 AM', style: TextStyle(fontSize: 12, color: AppColors.muted)),
-            ])),
-            const Icon(Icons.chevron_right_rounded, color: AppColors.muted),
-          ]),
-        ),
+        if (upcomingTasks.isEmpty)
+          WhitePanel(child: Text(tr(language, 'no_tasks'), style: const TextStyle(color: AppColors.muted)))
+        else
+          WhitePanel(
+            padding: const EdgeInsets.all(16),
+            child: Row(children: [
+              const SoftIcon(Icons.assignment_outlined, color: Color(0xFFD88B3F), background: AppColors.paleAmber),
+              const SizedBox(width: 13),
+              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(upcomingTasks.first.type.toUpperCase(), style: const TextStyle(fontSize: 10, letterSpacing: .9, color: Color(0xFFD88B3F), fontWeight: FontWeight.w800)),
+                const SizedBox(height: 4),
+                Text(upcomingTasks.first.title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.ink)),
+                const SizedBox(height: 3),
+                Text(upcomingTasks.first.dueLabel, style: const TextStyle(fontSize: 12, color: AppColors.muted)),
+              ])),
+              const Icon(Icons.chevron_right_rounded, color: AppColors.muted),
+            ]),
+          ),
       ]),
     );
   }
