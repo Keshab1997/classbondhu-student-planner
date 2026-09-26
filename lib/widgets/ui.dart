@@ -65,7 +65,7 @@ class WhitePanel extends StatelessWidget {
             padding: padding,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(22),
-              border: Border.all(color: AppColors.line.withOpacity(.82)),
+              border: Border.all(color: AppColors.line.withValues(alpha: .82)),
               boxShadow: const [BoxShadow(color: Color(0x080E1733), blurRadius: 22, offset: Offset(0, 8))],
             ),
             child: child,

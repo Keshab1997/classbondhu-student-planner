@@ -63,7 +63,7 @@ class AttendanceScreen extends StatelessWidget {
               padding: const EdgeInsets.all(17),
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Row(children: [
-                  Container(width: 42, height: 42, decoration: BoxDecoration(color: Color(subject.color).withOpacity(.12), borderRadius: BorderRadius.circular(14)), child: Icon(Icons.menu_book_rounded, color: Color(subject.color), size: 20)),
+                  Container(width: 42, height: 42, decoration: BoxDecoration(color: Color(subject.color).withValues(alpha: .12), borderRadius: BorderRadius.circular(14)), child: Icon(Icons.menu_book_rounded, color: Color(subject.color), size: 20)),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(

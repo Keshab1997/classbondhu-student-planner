@@ -32,7 +32,7 @@ Widgets must not issue raw SQL. UI calls feature services/repositories; reposito
 
 ## Data lifecycle
 
-**Prototype status:** current screen state is in memory and resets on restart. It is not yet a usable persistent planner.
+**Current implementation:** subjects, routine entries, attendance, tasks, language, and attendance target persist in a versioned SQLite snapshot on-device through `sqflite`. The current store uses one atomic JSON payload row as a small-app starting point; normalize into entity tables if query needs grow.
 
 **v1 target:** all academic data stays on the device in local storage. On app update, migrations must preserve data. If app data is cleared or the app is uninstalled, data may be lost; communicate this clearly until export/backup exists. Do not add cloud sync without a separate threat model, consent, and privacy update.
 

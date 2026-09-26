@@ -1,4 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+
+import 'app_storage.dart';
 
 enum AppLanguage { en, bn, hi }
 
@@ -34,6 +38,24 @@ class SubjectData {
   final String room;
 
   double get percentage => conducted == 0 ? 0 : attended / conducted;
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'attended': attended,
+        'conducted': conducted,
+        'color': color,
+        'room': room,
+      };
+
+  factory SubjectData.fromJson(Map<String, dynamic> json) => SubjectData(
+        id: json['id'] as String,
+        name: json['name'] as String,
+        attended: (json['attended'] as num?)?.toInt() ?? 0,
+        conducted: (json['conducted'] as num?)?.toInt() ?? 0,
+        color: (json['color'] as num?)?.toInt() ?? 0xFF5868DB,
+        room: json['room'] as String? ?? '',
+      );
 }
 
 class TaskData {
@@ -52,75 +74,208 @@ class TaskData {
   final String dueLabel;
   final String type;
   bool done;
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'title': title,
+        'subject': subject,
+        'dueLabel': dueLabel,
+        'type': type,
+        'done': done,
+      };
+
+  factory TaskData.fromJson(Map<String, dynamic> json) => TaskData(
+        id: json['id'] as String,
+        title: json['title'] as String,
+        subject: json['subject'] as String? ?? '',
+        dueLabel: json['dueLabel'] as String? ?? '',
+        type: json['type'] as String? ?? 'Other',
+        done: json['done'] as bool? ?? false,
+      );
+}
+
+class RoutineEntryData {
+  const RoutineEntryData({
+    required this.id,
+    required this.weekday,
+    required this.startTime,
+    required this.endTime,
+    required this.title,
+    required this.room,
+    required this.subjectId,
+    required this.color,
+  });
+
+  final String id;
+  final int weekday; // Monday = 1 ... Sunday = 7.
+  final String startTime;
+  final String endTime;
+  final String title;
+  final String room;
+  final String subjectId;
+  final int color;
+
+  String get time => '$startTime – $endTime';
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'weekday': weekday,
+        'startTime': startTime,
+        'endTime': endTime,
+        'title': title,
+        'room': room,
+        'subjectId': subjectId,
+        'color': color,
+      };
+
+  factory RoutineEntryData.fromJson(Map<String, dynamic> json) => RoutineEntryData(
+        id: json['id'] as String,
+        weekday: (json['weekday'] as num?)?.toInt() ?? 1,
+        startTime: json['startTime'] as String? ?? '09:00',
+        endTime: json['endTime'] as String? ?? '10:00',
+        title: json['title'] as String? ?? 'Class',
+        room: json['room'] as String? ?? '',
+        subjectId: json['subjectId'] as String? ?? '',
+        color: (json['color'] as num?)?.toInt() ?? 0xFF5868DB,
+      );
 }
 
 class AppController extends ChangeNotifier {
+  AppController({AppStorage? storage}) : _storage = storage ?? MemoryAppStorage() {
+    _seedDemoState();
+  }
+
+  final AppStorage _storage;
+  Future<void> _writeQueue = Future<void>.value();
+  Object? lastStorageError;
+
   AppLanguage language = AppLanguage.en;
   int attendanceTarget = 75;
-
-  final List<SubjectData> subjects = [
-    SubjectData(
-      id: 'math', name: 'Mathematics', attended: 9, conducted: 11,
-      color: 0xFF6675E8, room: 'Room 204',
-    ),
-    SubjectData(
-      id: 'physics', name: 'Physics', attended: 7, conducted: 9,
-      color: 0xFF39BFA4, room: 'Lab 2',
-    ),
-    SubjectData(
-      id: 'english', name: 'English', attended: 12, conducted: 13,
-      color: 0xFFF0A65B, room: 'Room 108',
-    ),
-  ];
-
+  String attendanceDateKey = _dateKey(DateTime.now());
+  final List<SubjectData> subjects = [];
+  final List<TaskData> tasks = [];
+  final List<RoutineEntryData> routineEntries = [];
   final Map<String, bool> todayAttendance = {};
 
-  final List<TaskData> tasks = [
-    TaskData(
-      id: 'task-1', title: 'Physics assignment', subject: 'Physics',
-      dueLabel: 'Tomorrow · 10:00 AM', type: 'Assignment',
-    ),
-    TaskData(
-      id: 'task-2', title: 'Linear algebra quiz', subject: 'Mathematics',
-      dueLabel: 'Thu · 9:00 AM', type: 'Quiz',
-    ),
-    TaskData(
-      id: 'task-3', title: 'Lab report: motion', subject: 'Physics',
-      dueLabel: 'Fri · 4:00 PM', type: 'Assignment', done: true,
-    ),
-  ];
+  static Future<AppController> open(AppStorage storage) async {
+    final controller = AppController(storage: storage);
+    final saved = await storage.load();
+    if (saved == null) {
+      await storage.save(controller.toJson());
+      return controller;
+    }
+    controller._restore(saved);
+    if (controller.attendanceDateKey != _dateKey(DateTime.now())) {
+      controller.attendanceDateKey = _dateKey(DateTime.now());
+      controller.todayAttendance.clear();
+      await storage.save(controller.toJson());
+    }
+    return controller;
+  }
+
+  void _seedDemoState() {
+    final weekday = DateTime.now().weekday;
+    subjects.addAll([
+      SubjectData(id: 'math', name: 'Mathematics', attended: 9, conducted: 11, color: 0xFF6675E8, room: 'Room 204'),
+      SubjectData(id: 'physics', name: 'Physics', attended: 7, conducted: 9, color: 0xFF39BFA4, room: 'Lab 2'),
+      SubjectData(id: 'english', name: 'English', attended: 12, conducted: 13, color: 0xFFF0A65B, room: 'Room 108'),
+    ]);
+    tasks.addAll([
+      TaskData(id: 'task-1', title: 'Physics assignment', subject: 'Physics', dueLabel: 'Tomorrow · 10:00 AM', type: 'Assignment'),
+      TaskData(id: 'task-2', title: 'Linear algebra quiz', subject: 'Mathematics', dueLabel: 'Thu · 9:00 AM', type: 'Quiz'),
+      TaskData(id: 'task-3', title: 'Lab report: motion', subject: 'Physics', dueLabel: 'Fri · 4:00 PM', type: 'Assignment', done: true),
+    ]);
+    routineEntries.addAll([
+      RoutineEntryData(id: 'routine-1', weekday: weekday, startTime: '09:00', endTime: '10:00', title: 'Mathematics', room: 'Room 204', subjectId: 'math', color: 0xFF6876E8),
+      RoutineEntryData(id: 'routine-2', weekday: weekday, startTime: '11:15', endTime: '12:15', title: 'Physics', room: 'Lab 2', subjectId: 'physics', color: 0xFF39BFA4),
+      RoutineEntryData(id: 'routine-3', weekday: weekday, startTime: '14:00', endTime: '15:00', title: 'English', room: 'Room 108', subjectId: 'english', color: 0xFFF0A65B),
+    ]);
+  }
+
+  void _restore(Map<String, dynamic> json) {
+    final languageName = json['language'] as String?;
+    language = AppLanguage.values.firstWhere((item) => item.name == languageName, orElse: () => AppLanguage.en);
+    attendanceTarget = (json['attendanceTarget'] as num?)?.toInt() ?? 75;
+    attendanceDateKey = json['attendanceDateKey'] as String? ?? _dateKey(DateTime.now());
+
+    final savedSubjects = json['subjects'];
+    if (savedSubjects is List) {
+      subjects
+        ..clear()
+        ..addAll(savedSubjects.whereType<Map>().map((item) => SubjectData.fromJson(Map<String, dynamic>.from(item))));
+    }
+    final savedTasks = json['tasks'];
+    if (savedTasks is List) {
+      tasks
+        ..clear()
+        ..addAll(savedTasks.whereType<Map>().map((item) => TaskData.fromJson(Map<String, dynamic>.from(item))));
+    }
+    final savedRoutine = json['routineEntries'];
+    if (savedRoutine is List) {
+      routineEntries
+        ..clear()
+        ..addAll(savedRoutine.whereType<Map>().map((item) => RoutineEntryData.fromJson(Map<String, dynamic>.from(item))));
+    }
+    final savedAttendance = json['todayAttendance'];
+    if (savedAttendance is Map) {
+      todayAttendance
+        ..clear()
+        ..addAll(savedAttendance.map((key, value) => MapEntry(key.toString(), value == true)));
+    }
+  }
+
+  Map<String, dynamic> toJson() => {
+        'schemaVersion': 1,
+        'language': language.name,
+        'attendanceTarget': attendanceTarget,
+        'attendanceDateKey': attendanceDateKey,
+        'subjects': subjects.map((item) => item.toJson()).toList(),
+        'tasks': tasks.map((item) => item.toJson()).toList(),
+        'routineEntries': routineEntries.map((item) => item.toJson()).toList(),
+        'todayAttendance': todayAttendance,
+      };
+
+  Future<void> flush() => _writeQueue;
+
+  void _changed() {
+    notifyListeners();
+    final snapshot = toJson();
+    _writeQueue = _writeQueue.then((_) => _storage.save(snapshot)).catchError((Object error) {
+      lastStorageError = error;
+    });
+  }
 
   void setLanguage(AppLanguage value) {
     language = value;
-    notifyListeners();
+    _changed();
   }
 
   void setTarget(int value) {
-    attendanceTarget = value;
-    notifyListeners();
+    attendanceTarget = value.clamp(50, 100).toInt();
+    _changed();
   }
 
   void markAttendance(String subjectId, {required bool present}) {
-    final subject = subjects.firstWhere((item) => item.id == subjectId);
+    final today = _dateKey(DateTime.now());
+    if (attendanceDateKey != today) {
+      attendanceDateKey = today;
+      todayAttendance.clear();
+    }
     if (todayAttendance.containsKey(subjectId)) return;
+    final subject = subjects.firstWhere((item) => item.id == subjectId);
     subject.conducted += 1;
     if (present) subject.attended += 1;
     todayAttendance[subjectId] = present;
-    notifyListeners();
+    _changed();
   }
 
   void toggleTask(String id) {
     final task = tasks.firstWhere((item) => item.id == id);
     task.done = !task.done;
-    notifyListeners();
+    _changed();
   }
 
-  void addTask({
-    required String title,
-    required String subject,
-    required String dueLabel,
-    required String type,
-  }) {
+  void addTask({required String title, required String subject, required String dueLabel, required String type}) {
     tasks.insert(0, TaskData(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
       title: title,
@@ -128,18 +283,28 @@ class AppController extends ChangeNotifier {
       dueLabel: dueLabel,
       type: type,
     ));
-    notifyListeners();
+    _changed();
   }
 
   void addSubject(String name) {
     if (name.trim().isEmpty) return;
     subjects.add(SubjectData(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
-      name: name.trim(), attended: 0, conducted: 0,
+      name: name.trim(),
+      attended: 0,
+      conducted: 0,
       color: 0xFF8A6FE8,
     ));
-    notifyListeners();
+    _changed();
   }
+
+  void addRoutineEntry(RoutineEntryData entry) {
+    routineEntries.add(entry);
+    _changed();
+  }
+
+  static String _dateKey(DateTime date) =>
+      '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
 }
 
 class AppScope extends InheritedNotifier<AppController> {

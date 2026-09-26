@@ -9,9 +9,9 @@ Complete in sequence; do not begin production monetization before core behavior 
 - [ ] Generate Android runner scaffold, add CI checks, and move interface copy to generated localization resources if desired.
 
 ## Phase 1 — Foundations
-- [ ] Configure Bengali/English/Hindi ARB localizations.
-- [ ] Implement local database, schema versioning, and repositories.
-- [ ] Add accessible theme, routing, and Settings preferences.
+- [ ] Move the current Bengali/English/Hindi copy table to generated ARB localization resources.
+- [x] Implement on-device SQLite persistence with a versioned state payload and app repository.
+- [x] Add accessible theme, routing, and Settings preferences.
 
 ## Phase 2 — Subjects and timetable
 - [ ] Subject create/edit/archive.

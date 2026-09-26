@@ -119,7 +119,7 @@ class _TaskEditorScreenState extends State<TaskEditorScreen> {
         ),
         const SizedBox(height: 14),
         DropdownButtonFormField<String>(
-          value: subject,
+          initialValue: subject,
           decoration: InputDecoration(labelText: tr(language, 'subject')),
           items: [DropdownMenuItem<String>(value: null, child: Text(tr(language, 'no_subject'))), ...controller.subjects.map((item) => DropdownMenuItem(value: item.name, child: Text(item.name)))],
           onChanged: (value) => setState(() => subject = value),

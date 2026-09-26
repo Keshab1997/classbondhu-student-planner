@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
 import 'app.dart';
+import 'core/app_controller.dart';
+import 'core/app_storage.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const ClassBondhuApp());
+  final controller = await AppController.open(SqliteAppStorage());
+  runApp(ClassBondhuApp(controller: controller));
 }

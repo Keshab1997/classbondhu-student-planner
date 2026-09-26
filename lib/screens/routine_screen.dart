@@ -14,20 +14,19 @@ class RoutineScreen extends StatefulWidget {
 
 class _RoutineScreenState extends State<RoutineScreen> {
   int selectedDay = DateTime.now().weekday - 1;
-  final List<_RoutineEntry> entries = [
-    _RoutineEntry(time: '09:00 – 10:00', title: 'Mathematics', room: 'Room 204', subjectId: 'math', color: const Color(0xFF6876E8)),
-    _RoutineEntry(time: '11:15 – 12:15', title: 'Physics', room: 'Lab 2', subjectId: 'physics', color: const Color(0xFF39BFA4)),
-    _RoutineEntry(time: '14:00 – 15:00', title: 'English', room: 'Room 108', subjectId: 'english', color: const Color(0xFFF0A65B)),
-  ];
 
   @override
   Widget build(BuildContext context) {
-    final language = AppScope.of(context).language;
+    final controller = AppScope.of(context);
+    final language = controller.language;
     final dayLabels = language == AppLanguage.bn
         ? const ['সো', 'ম', 'বু', 'বৃ', 'শু', 'শ', 'র']
         : language == AppLanguage.hi
             ? const ['सो', 'मं', 'बु', 'गु', 'शु', 'श', 'र']
             : const ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+    final entries = controller.routineEntries.where((entry) => entry.weekday == selectedDay + 1).toList()
+      ..sort((a, b) => a.startTime.compareTo(b.startTime));
+
     return Scaffold(
       backgroundColor: AppColors.canvas,
       floatingActionButton: FloatingActionButton.extended(
@@ -69,7 +68,14 @@ class _RoutineScreenState extends State<RoutineScreen> {
           if (entries.isEmpty)
             WhitePanel(child: Center(child: Text(tr(language, 'no_classes'), style: const TextStyle(color: AppColors.muted))))
           else
-            ...entries.map((entry) => ClassCard(time: entry.time, title: entry.title, room: entry.room, subjectId: entry.subjectId, accent: entry.color, showAttendanceAction: false)),
+            ...entries.map((entry) => ClassCard(
+                  time: entry.time,
+                  title: entry.title,
+                  room: entry.room,
+                  subjectId: entry.subjectId,
+                  accent: Color(entry.color),
+                  showAttendanceAction: false,
+                )),
           const SizedBox(height: 20),
           WhitePanel(
             child: Row(children: [
@@ -86,7 +92,8 @@ class _RoutineScreenState extends State<RoutineScreen> {
   Future<void> _addClass() async {
     final titleController = TextEditingController();
     final roomController = TextEditingController();
-    final result = await showModalBottomSheet<_RoutineEntry>(
+    final controller = AppScope.of(context);
+    final result = await showModalBottomSheet<RoutineEntryData>(
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
@@ -94,34 +101,35 @@ class _RoutineScreenState extends State<RoutineScreen> {
       builder: (sheetContext) => Padding(
         padding: EdgeInsets.fromLTRB(20, 8, 20, MediaQuery.viewInsetsOf(sheetContext).bottom + 24),
         child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(tr(AppScope.of(context).language, 'add_class'), style: Theme.of(context).textTheme.titleLarge),
+          Text(tr(controller.language, 'add_class'), style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 16),
-          TextField(controller: titleController, decoration: InputDecoration(labelText: tr(AppScope.of(context).language, 'subject'))),
+          TextField(controller: titleController, decoration: InputDecoration(labelText: tr(controller.language, 'subject'))),
           const SizedBox(height: 10),
           TextField(controller: roomController, decoration: const InputDecoration(labelText: 'Room / location')),
           const SizedBox(height: 16),
           SizedBox(width: double.infinity, child: FilledButton(
-            onPressed: () => Navigator.pop(sheetContext, _RoutineEntry(
-              time: '09:00 – 10:00', title: titleController.text.trim().isEmpty ? 'New class' : titleController.text.trim(),
-              room: roomController.text.trim().isEmpty ? 'Add location' : roomController.text.trim(),
-              subjectId: 'math', color: AppColors.brand,
-            )),
-            child: Text(tr(AppScope.of(context).language, 'save')),
+            onPressed: () {
+              final title = titleController.text.trim().isEmpty ? 'New class' : titleController.text.trim();
+              final matchingSubjects = controller.subjects.where((item) => item.name.toLowerCase() == title.toLowerCase());
+              final subjectId = matchingSubjects.isEmpty ? '' : matchingSubjects.first.id;
+              Navigator.pop(sheetContext, RoutineEntryData(
+                id: DateTime.now().microsecondsSinceEpoch.toString(),
+                weekday: selectedDay + 1,
+                startTime: '09:00',
+                endTime: '10:00',
+                title: title,
+                room: roomController.text.trim().isEmpty ? 'Add location' : roomController.text.trim(),
+                subjectId: subjectId,
+                color: AppColors.brand.value,
+              ));
+            },
+            child: Text(tr(controller.language, 'save')),
           )),
         ]),
       ),
     );
     titleController.dispose();
     roomController.dispose();
-    if (result != null && mounted) setState(() => entries.add(result));
+    if (result != null && mounted) controller.addRoutineEntry(result);
   }
-}
-
-class _RoutineEntry {
-  const _RoutineEntry({required this.time, required this.title, required this.room, required this.subjectId, required this.color});
-  final String time;
-  final String title;
-  final String room;
-  final String subjectId;
-  final Color color;
 }

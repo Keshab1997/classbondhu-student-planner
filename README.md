@@ -46,7 +46,7 @@ Read and implement these in order; later docs depend on earlier product decision
 
 ## Current project status
 
-**UI prototype phase.** Flutter source screens now live under `lib/`; the agreed first light-theme reference is in [`design/`](design/). The prototype includes the Today, Routine, Attendance, subject detail, Tasks, task editor, Settings, language selection, and subject setup screens. Sample state is in memory only: local database persistence, production notifications, AdMob, and generated Android runner scaffolding are not implemented yet. Flutter is not installed in the authoring sandbox, so the code and tests still need to be run on a machine with Flutter.
+**Early app implementation.** Flutter source screens now live under `lib/`; the agreed first light-theme reference is in [`design/`](design/). The app includes Today, Routine, Attendance, subject detail, Tasks, task editor, Settings, language selection, and subject setup screens. Subject, routine, attendance, task, language, and target state now persist locally in SQLite. Production notifications, AdMob, and generated Android runner scaffolding are not implemented yet. Flutter is not installed in the authoring sandbox, so the code and tests are validated through GitHub Actions.
 
 The app uses the confirmed Android application ID `com.keshabstudios.classbondhu`. Keep this exact ID in Play Console and Android build configuration.
 

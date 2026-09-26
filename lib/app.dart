@@ -5,18 +5,28 @@ import 'core/app_theme.dart';
 import 'screens/app_shell.dart';
 
 class ClassBondhuApp extends StatefulWidget {
-  const ClassBondhuApp({super.key});
+  const ClassBondhuApp({this.controller, super.key});
+
+  final AppController? controller;
 
   @override
   State<ClassBondhuApp> createState() => _ClassBondhuAppState();
 }
 
 class _ClassBondhuAppState extends State<ClassBondhuApp> {
-  final AppController controller = AppController();
+  late final AppController controller;
+  late final bool ownsController;
+
+  @override
+  void initState() {
+    super.initState();
+    ownsController = widget.controller == null;
+    controller = widget.controller ?? AppController();
+  }
 
   @override
   void dispose() {
-    controller.dispose();
+    if (ownsController) controller.dispose();
     super.dispose();
   }
 
