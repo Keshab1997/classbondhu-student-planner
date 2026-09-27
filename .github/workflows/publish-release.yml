@@ -21,7 +21,7 @@ permissions:
 jobs:
   publish:
     # Call the build workflow directly so it can generate this repo's missing Android runner.
-    uses: Keshab1997/flutter-builder/.github/workflows/flutter-build.yml@v1.7.0
+    uses: Keshab1997/flutter-builder/.github/workflows/flutter-build.yml@v1.8.1
     with:
       flutter-channel: stable
       working-directory: "."
