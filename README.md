@@ -46,22 +46,24 @@ Read and implement these in order; later docs depend on earlier product decision
 
 ## Current project status
 
-**Early app implementation.** Flutter source screens now live under `lib/`; the agreed first light-theme reference is in [`design/`](design/). The app includes Today, Routine, Attendance, subject detail, Tasks, task editor, Settings, language selection, and subject setup screens. Subject, routine, attendance, task, language, and target state now persist locally in SQLite. Production notifications, AdMob, and generated Android runner scaffolding are not implemented yet. Flutter is not installed in the authoring sandbox, so the code and tests are validated through GitHub Actions.
+**Early app implementation.** Flutter source screens now live under `lib/`; the agreed first light-theme reference is in [`design/`](design/). The app includes Today, Routine, Attendance, subject detail, Tasks, task editor, Settings, language selection, and subject setup screens. Subject, routine, attendance, task, language, and target state now persist locally in SQLite. Production notifications and AdMob are not implemented yet. The Android runner is generated and committed under [`android/`](android/); the launcher icon is still the default Flutter icon.
 
 The app uses the confirmed Android application ID `com.keshabstudios.classbondhu`. Keep this exact ID in Play Console and Android build configuration.
 
-## Run / verify (after Android platform scaffold is generated)
-
-On a machine with Flutter installed, generate the Android runner into a temporary folder so the existing UI source is not overwritten, then copy the runner into this repository:
+## Run / verify
 
 ```bash
-flutter create --platforms=android --org com.keshabstudios --project-name classbondhu /tmp/classbondhu_scaffold
-cp -R /tmp/classbondhu_scaffold/android ./android
-cp /tmp/classbondhu_scaffold/.metadata ./.metadata
 flutter pub get
 flutter analyze
 flutter test
 flutter run
+```
+
+`flutter run` needs a connected Android device or emulator. To regenerate the Android runner from scratch without touching the UI source, create it in a temporary folder and copy only the runner back:
+
+```bash
+flutter create --platforms=android --org com.keshabstudios --project-name classbondhu /tmp/classbondhu_scaffold
+cp -R /tmp/classbondhu_scaffold/android ./android
 ```
 
 The interface copy currently uses an in-code Bengali/English/Hindi table; ARB code generation can be adopted in the localization milestone.
