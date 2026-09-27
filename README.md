@@ -46,7 +46,7 @@ Read and implement these in order; later docs depend on earlier product decision
 
 ## Current project status
 
-**Early app implementation.** Flutter source screens now live under `lib/`; the agreed first light-theme reference is in [`design/`](design/). The app includes Today, Routine, Attendance, subject detail, Tasks, task editor, Settings, language selection, and subject setup screens. Subject, routine, attendance, task, language, and target state now persist locally in SQLite. Production notifications and AdMob are not implemented yet. The Android runner is generated and committed under [`android/`](android/); the launcher icon is still the default Flutter icon.
+**Early app implementation.** Flutter source screens now live under `lib/`; the agreed first light-theme reference is in [`design/`](design/). The app includes Today, Routine, Attendance, subject detail, Tasks, task editor, Settings, language selection, and subject setup screens. Subject, routine, attendance, task, language, and target state now persist locally in SQLite on Android and in `shared_preferences` on the web, where sqflite has no implementation. Production notifications and AdMob are not implemented yet. The Android and web runners are generated and committed under [`android/`](android/) and [`web/`](web/); the launcher icon is still the default Flutter icon.
 
 The app uses the confirmed Android application ID `com.keshabstudios.classbondhu`. Keep this exact ID in Play Console and Android build configuration.
 
@@ -59,7 +59,14 @@ flutter test
 flutter run
 ```
 
-`flutter run` needs a connected Android device or emulator. To regenerate the Android runner from scratch without touching the UI source, create it in a temporary folder and copy only the runner back:
+`flutter run` needs a connected Android device or emulator. To run the web preview instead, use a browser device or the web-server device (which does not require Chrome):
+
+```bash
+flutter run -d chrome
+flutter run -d web-server --web-port 8899
+```
+
+To regenerate a platform runner from scratch without touching the UI source, create it in a temporary folder and copy only the runner back:
 
 ```bash
 flutter create --platforms=android --org com.keshabstudios --project-name classbondhu /tmp/classbondhu_scaffold

@@ -2,7 +2,9 @@
 
 Use stable local IDs (UUIDs or database-generated IDs), UTC timestamps where appropriate, and local timezone-aware class/task times. Decide a schema version and migration policy before the first app build.
 
-**Current implementation note:** v0.1 stores this model as one versioned JSON snapshot row in SQLite (`app_state`) so changes are atomic and data survives app restarts. The entity definitions below are the logical model; normalized SQL tables and migrations can replace the snapshot if filtering/reporting needs grow. Do not change the snapshot shape without incrementing and handling `schemaVersion`.
+**Current implementation note:** v0.1 stores this model as one versioned JSON snapshot so changes are atomic and data survives app restarts. The entity definitions below are the logical model; normalized SQL tables and migrations can replace the snapshot if filtering/reporting needs grow. Do not change the snapshot shape without incrementing and handling `schemaVersion`.
+
+Storage is selected per platform behind the `AppStorage` interface. Android and desktop write the snapshot to SQLite in a single `app_state` row (`SqliteAppStorage`). The web build has no sqflite implementation, so it stores the same JSON snapshot through `shared_preferences`, which is browser local storage (`PreferencesAppStorage`). Web data is a preview convenience only: it lives in one browser profile, is not encrypted, and is not shared with the mobile database.
 
 ## Entities
 

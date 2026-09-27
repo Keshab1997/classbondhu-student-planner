@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:path/path.dart' as p;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 
 abstract interface class AppStorage {
@@ -76,5 +77,31 @@ class MemoryAppStorage implements AppStorage {
   @override
   Future<void> save(Map<String, dynamic> state) async {
     _state = Map<String, dynamic>.from(jsonDecode(jsonEncode(state)) as Map);
+  }
+}
+
+/// Key-value backed store for the web build, where sqflite has no
+/// implementation. The payload stays the same versioned JSON snapshot, so the
+/// web preview persists exactly what the mobile build writes to SQLite.
+class PreferencesAppStorage implements AppStorage {
+  PreferencesAppStorage({this.key = 'app_state'});
+
+  final String key;
+  Future<SharedPreferences>? _preferences;
+
+  Future<SharedPreferences> get _prefs async => _preferences ??= SharedPreferences.getInstance();
+
+  @override
+  Future<Map<String, dynamic>?> load() async {
+    final encoded = (await _prefs).getString(key);
+    if (encoded == null) return null;
+    final decoded = jsonDecode(encoded);
+    if (decoded is! Map) return null;
+    return Map<String, dynamic>.from(decoded);
+  }
+
+  @override
+  Future<void> save(Map<String, dynamic> state) async {
+    await (await _prefs).setString(key, jsonEncode(state));
   }
 }

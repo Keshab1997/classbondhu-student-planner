@@ -105,20 +105,47 @@ class AttendanceScreen extends StatelessWidget {
   }
 
   void _addSubject(BuildContext context) {
-    final controller = TextEditingController();
     final language = AppScope.of(context).language;
     showDialog<void>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(tr(language, 'add_subject')),
-        content: TextField(controller: controller, autofocus: true, decoration: InputDecoration(hintText: tr(language, 'subject_name'))),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(tr(language, 'cancel'))),
-          FilledButton(onPressed: () { AppScope.of(context).addSubject(controller.text); Navigator.pop(dialogContext); }, child: Text(tr(language, 'save'))),
-        ],
-      ),
-    ).whenComplete(controller.dispose);
+      builder: (dialogContext) => _AddSubjectDialog(language: language),
+    );
   }
+}
+
+class _AddSubjectDialog extends StatefulWidget {
+  const _AddSubjectDialog({required this.language});
+
+  final AppLanguage language;
+
+  @override
+  State<_AddSubjectDialog> createState() => _AddSubjectDialogState();
+}
+
+class _AddSubjectDialogState extends State<_AddSubjectDialog> {
+  final subjectController = TextEditingController();
+
+  @override
+  void dispose() {
+    subjectController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+        title: Text(tr(widget.language, 'add_subject')),
+        content: TextField(controller: subjectController, autofocus: true, textCapitalization: TextCapitalization.words, decoration: InputDecoration(hintText: tr(widget.language, 'subject_name'))),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(tr(widget.language, 'cancel'))),
+          FilledButton(
+            onPressed: () {
+              AppScope.of(context).addSubject(subjectController.text);
+              Navigator.pop(context);
+            },
+            child: Text(tr(widget.language, 'save')),
+          ),
+        ],
+      );
 }
 
 class SubjectDetailScreen extends StatelessWidget {
